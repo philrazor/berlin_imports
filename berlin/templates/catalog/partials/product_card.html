@@ -1,0 +1,22 @@
+<article class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <a class="block" href="{{ product.get_absolute_url }}">
+        {% with image=product.images.all|first %}
+            {% if image %}
+                <img class="aspect-[4/3] w-full bg-slate-100 object-cover" src="{{ image.image.url }}" alt="{{ image.alt_text }}">
+            {% else %}
+                <div class="flex aspect-[4/3] items-center justify-center bg-slate-100 text-sm text-slate-500">Product image coming soon</div>
+            {% endif %}
+        {% endwith %}
+        <div class="p-5">
+            <p class="text-sm text-slate-500">{{ product.brand.name }} · {{ product.category.name }}</p>
+            <h3 class="mt-2 font-semibold text-slate-950">{{ product.name }}</h3>
+            <p class="mt-1 text-sm text-slate-500">SKU: {{ product.sku }}</p>
+            <p class="mt-4 text-lg font-bold">{{ product.price }} {{ product.currency }}</p>
+            {% if product.is_available %}
+                <p class="mt-2 text-sm text-emerald-700">In stock</p>
+            {% else %}
+                <p class="mt-2 text-sm text-slate-500">Out of stock</p>
+            {% endif %}
+        </div>
+    </a>
+</article>

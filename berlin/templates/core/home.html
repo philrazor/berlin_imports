@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Berlin Imports | Automotive Spare Parts{% endblock %}
+{% block meta_description %}Find automotive spare parts by category, brand, and confirmed vehicle fitment at Berlin Imports.{% endblock %}
+
+{% block content %}
+<section class="bg-slate-950 text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-amber-400">Berlin Imports</p>
+        <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">The right part makes every journey.</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Explore automotive spare parts by brand, category, or vehicle. Compatibility is shown only when supported by catalogue data.</p>
+        <a class="mt-8 inline-flex rounded-md bg-amber-400 px-5 py-3 font-semibold text-slate-950 hover:bg-amber-300" href="{% url 'catalog:product_list' %}">Shop parts</a>
+    </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">Browse</p>
+            <h2 class="mt-2 text-3xl font-bold tracking-tight">Shop by category</h2>
+        </div>
+        <a class="font-semibold text-slate-700 hover:text-slate-950" href="{% url 'catalog:product_list' %}">View all parts</a>
+    </div>
+    {% if categories %}
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {% for category in categories %}
+                <a class="rounded-lg border border-slate-200 bg-white p-5 transition hover:border-slate-400" href="{{ category.get_absolute_url }}">
+                    <h3 class="font-semibold">{{ category.name }}</h3>
+                    {% if category.description %}<p class="mt-2 text-sm leading-6 text-slate-600">{{ category.description|truncatewords:18 }}</p>{% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-6 rounded-lg border border-slate-200 bg-white p-6 text-slate-600">Categories are being prepared. Please check back soon.</p>
+    {% endif %}
+</section>
+
+<section id="brands" class="bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold tracking-tight">Brands in focus</h2>
+        {% if brands %}
+            <div class="mt-6 flex flex-wrap gap-3">
+                {% for brand in brands %}
+                    <a class="inline-flex items-center gap-3 rounded-md border border-slate-200 px-4 py-3 font-medium hover:border-slate-400" href="{% url 'catalog:brand_detail' brand_slug=brand.slug %}">
+                        {% if brand.logo %}<img class="h-8 w-8 object-contain" src="{{ brand.logo.url }}" alt="{{ brand.name }} logo">{% endif %}
+                        <span>{{ brand.name }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="mt-4 text-slate-600">Brand listings are being prepared.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">Selected for you</p>
+            <h2 class="mt-2 text-3xl font-bold tracking-tight">Featured parts</h2>
+        </div>
+        <a class="font-semibold text-slate-700 hover:text-slate-950" href="{% url 'catalog:product_list' %}">Browse catalogue</a>
+    </div>
+    {% if featured_products %}
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {% for product in featured_products %}
+                {% include "catalog/partials/product_card.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-6 rounded-lg border border-slate-200 bg-white p-6 text-slate-600">Featured products will appear here as the catalogue is populated.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Your cart | Berlin Imports{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">Berlin Imports</p>
+            <h1 class="mt-2 text-3xl font-bold tracking-tight">Your cart</h1>
+        </div>
+        <a class="font-semibold underline" href="{% url 'catalog:product_list' %}">Continue shopping</a>
+    </div>
+
+    {% if cart.lines %}
+        <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]">
+            <div class="space-y-4">
+                {% for line in cart.lines %}
+                    <article class="grid gap-5 rounded-lg border border-slate-200 bg-white p-5 sm:grid-cols-[8rem_1fr_auto]">
+                        {% if line.image_url %}
+                            <img class="aspect-square w-full rounded-md bg-slate-100 object-cover" src="{{ line.image_url }}" alt="{{ line.name }}">
+                        {% else %}
+                            <div class="flex aspect-square items-center justify-center rounded-md bg-slate-100 p-3 text-center text-xs text-slate-500">Product image coming soon</div>
+                        {% endif %}
+                        <div>
+                            <h2 class="font-semibold">
+                                {% if line.product_url %}<a class="hover:underline" href="{{ line.product_url }}">{{ line.name }}</a>{% else %}{{ line.name }}{% endif %}
+                            </h2>
+                            <p class="mt-1 text-sm text-slate-500">SKU: {{ line.sku }}</p>
+                            <p class="mt-2 font-medium">{{ line.unit_price }} {{ line.currency }} each</p>
+                            {% if line.is_available %}
+                                <p class="mt-1 text-sm text-emerald-700">In stock ({{ line.max_stock }} available)</p>
+                            {% else %}
+                                <p class="mt-1 text-sm text-red-700">Currently unavailable or quantity exceeds available stock. This item is excluded from subtotal.</p>
+                            {% endif %}
+                        </div>
+                        <div class="flex flex-col items-start gap-3 sm:items-end">
+                            {% if line.is_available %}
+                                <p class="font-semibold">{{ line.line_total }} {{ line.currency }}</p>
+                            {% else %}
+                                <p class="font-semibold">Not available</p>
+                            {% endif %}
+                            <form method="post" action="{% url 'cart:update' product_id=line.product_id %}" class="flex items-center gap-2">
+                                {% csrf_token %}
+                                <label class="sr-only" for="quantity-{{ line.product_id }}">Quantity for {{ line.name }}</label>
+                                <input class="w-20 rounded-md border border-slate-300 px-2 py-1.5" id="quantity-{{ line.product_id }}" name="quantity" type="number" min="1" max="{{ line.max_stock|default:1000 }}" value="{{ line.quantity }}" required>
+                                <button class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50" type="submit">Update</button>
+                            </form>
+                            <form method="post" action="{% url 'cart:remove' product_id=line.product_id %}">
+                                {% csrf_token %}
+                                <button class="text-sm font-medium text-red-700 underline" type="submit">Remove</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            <aside class="h-fit rounded-lg border border-slate-200 bg-white p-6">
+                <h2 class="text-lg font-semibold">Subtotal</h2>
+                {% if cart.subtotals %}
+                    <dl class="mt-4 space-y-3">
+                        {% for currency, subtotal in cart.subtotals.items %}
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-slate-600">{{ currency }}</dt>
+                                <dd class="font-semibold">{{ subtotal }} {{ currency }}</dd>
+                            </div>
+                        {% endfor %}
+                    </dl>
+                {% else %}
+                    <p class="mt-3 text-slate-600">No currently available items are included.</p>
+                {% endif %}
+                {% if cart.subtotals|length > 1 %}
+                    <p class="mt-4 text-sm leading-6 text-slate-600">Items use different currencies. Subtotals are kept separate and are not converted or combined.</p>
+                {% endif %}
+                <p class="mt-5 border-t border-slate-200 pt-4 text-sm text-slate-600">Checkout will be available in a later phase.</p>
+            </aside>
+        </div>
+    {% else %}
+        <div class="mt-8 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
+            <h2 class="text-xl font-semibold">Your cart is empty</h2>
+            <p class="mt-2 text-slate-600">Browse the catalogue and add a part to get started.</p>
+            <a class="mt-5 inline-flex rounded-md bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800" href="{% url 'catalog:product_list' %}">Browse parts</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

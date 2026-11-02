@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | Berlin Imports{% endblock %}
+{% block meta_description %}Browse automotive spare parts by brand, category, price, availability, and vehicle details.{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">Berlin Imports catalogue</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">{{ page_title }}</h1>
+        {% if search_query %}<p class="mt-2 text-slate-600">Search results for “{{ search_query }}”</p>{% endif %}
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-[16rem_1fr]">
+        <aside>
+            <form method="get" class="space-y-4 rounded-lg border border-slate-200 bg-white p-5">
+                <h2 class="text-lg font-semibold">Find a part</h2>
+                {% if filter_form.non_field_errors %}<div class="text-sm text-red-700" role="alert">{{ filter_form.non_field_errors }}</div>{% endif %}
+                {% for field in filter_form %}
+                    <div>
+                        <label class="mb-1 block text-sm font-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<p class="mt-1 text-sm text-red-700" role="alert">{{ field.errors|join:", " }}</p>{% endif %}
+                    </div>
+                {% endfor %}
+                <button class="w-full rounded-md bg-slate-950 px-4 py-2.5 font-semibold text-white hover:bg-slate-800" type="submit">Apply filters</button>
+                <a class="block text-center text-sm font-medium text-slate-600 hover:text-slate-950" href="{% url 'catalog:product_list' %}">Clear filters</a>
+            </form>
+        </aside>
+
+        <section aria-labelledby="results-heading">
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <h2 id="results-heading" class="text-lg font-semibold">{{ page_obj.paginator.count }} part{{ page_obj.paginator.count|pluralize }}</h2>
+                {% if current_category %}<a class="text-sm text-slate-600 hover:text-slate-950" href="{{ current_category.get_absolute_url }}">Category: {{ current_category.name }}</a>{% endif %}
+                {% if current_brand %}<a class="text-sm text-slate-600 hover:text-slate-950" href="{{ current_brand.get_absolute_url }}">Brand: {{ current_brand.name }}</a>{% endif %}
+            </div>
+
+            {% if products %}
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {% for product in products %}
+                        {% include "catalog/partials/product_card.html" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
+                    <h3 class="text-lg font-semibold">No matching parts found</h3>
+                    <p class="mt-2 text-slate-600">Try another search or clear some filters.</p>
+                    <a class="mt-5 inline-flex rounded-md bg-slate-950 px-4 py-2.5 font-semibold text-white hover:bg-slate-800" href="{% url 'catalog:product_list' %}">Browse all parts</a>
+                </div>
+            {% endif %}
+
+            {% if is_paginated %}
+                <nav aria-label="Pagination" class="mt-8 flex items-center justify-between">
+                    {% if page_obj.has_previous %}
+                        <a class="rounded-md border border-slate-300 px-4 py-2 hover:bg-white" href="{% querystring page=page_obj.previous_page_number %}">Previous</a>
+                    {% else %}<span></span>{% endif %}
+                    <span class="text-sm text-slate-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                        <a class="rounded-md border border-slate-300 px-4 py-2 hover:bg-white" href="{% querystring page=page_obj.next_page_number %}">Next</a>
+                    {% else %}<span></span>{% endif %}
+                </nav>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

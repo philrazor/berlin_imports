@@ -1,0 +1,45 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+.venv/
+venv/
+virt/
+__pycache__/
+*.py[cod]
+
+# Local data and user uploads
+*.sqlite3
+*.sqlite3-*
+db.sqlite3
+media/
+
+# Django-generated files
+staticfiles/
+*.log
+
+# Node/Tailwind tooling
+node_modules/
+npm-debug.log*
+
+# Test/build output
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+build/
+dist/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+db.sqlite3
+media/
+staticfiles/
+node_modules/

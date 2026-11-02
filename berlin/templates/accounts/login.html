@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Log in | Berlin Imports{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-lg px-4 py-12 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight">Welcome back</h1>
+    <p class="mt-2 text-slate-600">Log in to manage your account and saved cart.</p>
+    <form method="post" class="mt-8 space-y-5 rounded-lg border border-slate-200 bg-white p-6">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+            <div>
+                <label class="mb-1 block text-sm font-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="mt-1 text-sm text-red-700" role="alert">{{ field.errors|join:", " }}</p>{% endif %}
+            </div>
+        {% endfor %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <button class="w-full rounded-md bg-slate-950 px-4 py-3 font-semibold text-white hover:bg-slate-800" type="submit">Log in</button>
+        <a class="block text-center text-sm font-medium underline" href="{% url 'accounts:password_reset' %}">Forgot your password?</a>
+    </form>
+    <p class="mt-5 text-sm text-slate-600">New to Berlin Imports? <a class="font-semibold underline" href="{% url 'accounts:register' %}">Create an account</a></p>
+</section>
+{% endblock %}

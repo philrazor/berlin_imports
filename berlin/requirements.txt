@@ -1,0 +1,5 @@
+Django==6.1.2
+Pillow>=11,<13
+dj-database-url>=2.3,<4
+psycopg[binary]>=3.2,<4
+python-dotenv>=1.1,<2
